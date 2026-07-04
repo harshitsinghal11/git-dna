@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SCAN_STAGES = [
-  'Establishing secure connection...',
-  'Locating developer coordinates...',
-  'Extracting commit history...',
-  'Decoding repository DNA...',
-  'Synthesizing final identity...'
+  'Finding developer...',
+  'Scanning repositories...',
+  'Analyzing activity...',
+  'Measuring impact...',
+  'Detecting strongest language...',
+  'Calculating achievements...',
+  'Building identity...'
 ];
 
 export default function ScanningScreen() {
