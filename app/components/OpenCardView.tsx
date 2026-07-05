@@ -42,13 +42,13 @@ export default function OpenCardView({ data, forceTab }: { data: GitDNAData, for
   return (
     <div className={`w-full ${forceTab ? 'h-auto' : 'h-full'} flex flex-col gap-4`}>
       {/* Main Card Container */}
-      <div className={`w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl ${forceTab ? 'overflow-visible' : 'overflow-hidden'} relative`}>
+      <div className={`w-full flex-1 flex flex-col bg-brand-surface border border-brand-border/50 rounded-xl ${forceTab ? 'overflow-visible' : 'overflow-hidden'} relative`}>
 
         {/* Glow behind the HUD */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% -20%, ${levelColor}20 0%, transparent 70%)` }} />
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-brand-border/50 bg-[#0B0E14]/80 backdrop-blur-md relative z-10 items-center">
+        <div className="flex border-b border-brand-border/50 bg-brand-surface relative z-10 items-center">
           {['Identity', 'Medals', 'Journey'].map((tab) => (
             <button
               key={tab}
@@ -137,21 +137,21 @@ export default function OpenCardView({ data, forceTab }: { data: GitDNAData, for
                   </div>
                 </motion.div>
 
-                <motion.div variants={forceTab ? undefined : itemVariants} className="p-6 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors text-center space-y-3 relative overflow-hidden group">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="py-6 text-center space-y-3 relative overflow-hidden group">
                   <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">{identity.archetype}</h3>
                   <p className="text-brand-text-main/80 italic font-medium">&quot;{identity.description}&quot;</p>
                 </motion.div>
 
-                <motion.div variants={forceTab ? undefined : itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors flex flex-col items-center justify-center text-center">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-8 py-4 border-t border-brand-border/30">
+                  <div className="flex flex-col items-center justify-center text-center">
                     <p className="text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em] mb-2">DNA Sequence</p>
                     <p className="text-sm font-black text-brand-primary tracking-widest">{identity.developerDNA}</p>
                   </div>
-                  <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors flex flex-col items-center justify-center text-center">
+                  <div className="flex flex-col items-center justify-center text-center">
                     <p className="text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em] mb-2">Primary Lang</p>
                     <p className="text-sm font-black text-white uppercase tracking-widest">{identity.topLanguage}</p>
                   </div>
-                  <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors flex flex-col items-center justify-center text-center">
+                  <div className="flex flex-col items-center justify-center text-center">
                     <p className="text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em] mb-2">Active Since</p>
                     <p className="text-lg font-black text-brand-text-main">{new Date(raw.profile.createdAt).getFullYear()}</p>
                   </div>
@@ -178,7 +178,7 @@ export default function OpenCardView({ data, forceTab }: { data: GitDNAData, for
                   {identity.medals.map((medal: Medal) => {
                     const isLocked = !medal.unlocked;
                     return (
-                      <motion.div variants={forceTab ? undefined : itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
+                      <motion.div variants={forceTab ? undefined : itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/40 rounded-lg border transition-colors relative overflow-hidden ${isLocked ? 'border-transparent grayscale opacity-50' : 'border-brand-border/50 hover:border-brand-border'}`}>
                         <div className="flex items-center gap-5 mb-4">
                           <div className={`w-16 h-16 relative flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
                             {isLocked ? (
@@ -253,7 +253,7 @@ export default function OpenCardView({ data, forceTab }: { data: GitDNAData, for
                         {/* Timeline dot */}
                         <div className="absolute left-[41px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
 
-                        <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border group-hover:border-brand-primary/50 transition-colors">
+                        <div className="py-2 transition-colors">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-bold text-white text-lg">{repo.name}</h4>
                             <span className="text-brand-accent text-xs font-mono font-bold flex items-center gap-1 bg-brand-accent/10 px-2 py-1 rounded-md">

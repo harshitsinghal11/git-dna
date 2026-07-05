@@ -23,7 +23,7 @@ const getLevelColor = (levelNumber: number) => {
   }
 };
 
-export default function IdentityCard({ data }: { data: GitDNAData | null }) {
+export default function IdentityCard({ data, onReset }: { data: GitDNAData | null, onReset?: () => void }) {
   const [revealState, setRevealState] = useState<RevealState>('closed');
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -121,48 +121,59 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
 
   if (revealState === 'open' && data) {
     return (
-      <>
-        {/* Action Buttons */}
-        <div className="fixed top-4 right-4 md:top-12 md:right-12 z-50 flex items-center gap-3">
-          <button 
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="flex items-center gap-2 p-3 rounded-xl bg-brand-surface border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary/50 transition-all group disabled:opacity-50 shadow-lg relative"
-            aria-label="Download Image"
-          >
-            {isDownloading ? (
-              <svg className="w-5 h-5 text-brand-primary animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <svg className="w-5 h-5 text-brand-text-muted group-hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            )}
-            <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-              {isDownloading ? 'Generating...' : 'Download Image'}
-            </div>
-          </button>
+      <div className="w-full flex flex-col">
+        {/* Action Buttons Bar */}
+        <div className="w-full flex justify-between items-center mb-6">
+          {onReset ? (
+            <button 
+              onClick={onReset}
+              className="flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-lg text-brand-text-muted hover:text-white hover:border-brand-primary/50 hover:bg-brand-primary/10 transition-all text-xs font-bold uppercase tracking-wider"
+            >
+              <span>←</span> New Scan
+            </button>
+          ) : <div />}
 
-          <button 
-            onClick={handleShare}
-            disabled={isGeneratingShare}
-            className="flex items-center gap-2 p-3 rounded-xl bg-brand-surface border border-brand-border hover:bg-[#0A66C2]/20 hover:border-[#0A66C2]/50 transition-all group disabled:opacity-50 shadow-lg relative"
-            aria-label="Share on LinkedIn"
-          >
-            {isGeneratingShare ? (
-              <svg className="w-5 h-5 text-[#0A66C2] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <svg className="w-5 h-5 text-brand-text-muted group-hover:text-[#0A66C2] transition-colors" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
-            )}
-            <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-              {isGeneratingShare ? 'Generating...' : 'Share on LinkedIn'}
-            </div>
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="flex items-center gap-2 p-3 rounded-lg bg-brand-surface border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary/50 transition-all group disabled:opacity-50 relative"
+              aria-label="Download Image"
+            >
+              {isDownloading ? (
+                <svg className="w-5 h-5 text-brand-primary animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-brand-text-muted group-hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              )}
+              <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                {isDownloading ? 'Generating...' : 'Download Image'}
+              </div>
+            </button>
+
+            <button 
+              onClick={handleShare}
+              disabled={isGeneratingShare}
+              className="flex items-center gap-2 p-3 rounded-lg bg-brand-surface border border-brand-border hover:bg-[#0A66C2]/20 hover:border-[#0A66C2]/50 transition-all group disabled:opacity-50 relative"
+              aria-label="Share on LinkedIn"
+            >
+              {isGeneratingShare ? (
+                <svg className="w-5 h-5 text-[#0A66C2] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-brand-text-muted group-hover:text-[#0A66C2] transition-colors" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              )}
+              <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                {isGeneratingShare ? 'Generating...' : 'Share on LinkedIn'}
+              </div>
+            </button>
+          </div>
         </div>
 
         <motion.div
@@ -171,11 +182,11 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full max-w-5xl h-auto min-h-[600px] perspective-[1000px] mb-12"
         >
-          <div ref={cardRef} className={`w-full ${downloadTab ? 'h-auto' : 'h-full'} bg-[#0B0E14] rounded-2xl p-1`}>
+          <div ref={cardRef} className={`w-full ${downloadTab ? 'h-auto' : 'h-full'} bg-[#0B0E14]`}>
             <OpenCardView data={data} forceTab={downloadTab} />
           </div>
         </motion.div>
-      </>
+      </div>
     );
   }
 
@@ -191,16 +202,9 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <motion.div
-          style={{
-            boxShadow: '0 20px 50px rgba(11,14,20,0.8)'
-          }}
-          className="relative w-full rounded-2xl overflow-hidden bg-brand-surface border-[2px] backdrop-blur-xl flex flex-col items-center text-center p-8 min-h-[550px] transition-all duration-1000"
+          className="relative w-full rounded-xl overflow-hidden bg-brand-surface border border-brand-border/50 flex flex-col items-center text-center p-8 sm:p-12 min-h-[550px] transition-all duration-1000"
         >
-          <motion.div
-            className="absolute inset-0 border-[2px] border-[#2A2D35]/50 rounded-2xl pointer-events-none"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
 
           <div className="space-y-3 z-10 w-full mb-4">
             <div className="relative mx-auto w-24 h-24">
@@ -238,7 +242,7 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
             {revealState === 'closed' ? (
               <button
                 onClick={startAnalysis}
-                className="w-full py-4 bg-brand-primary text-[#0B0E14] hover:scale-105 rounded-xl font-black tracking-widest transition-all uppercase text-sm shadow-[0_0_20px_rgba(56,189,248,0.3)]"
+                className="w-full py-4 bg-brand-primary text-[#0B0E14] hover:bg-brand-primary/90 hover:scale-[1.02] active:scale-[0.98] rounded-lg font-black tracking-widest transition-all uppercase text-sm"
               >
                 Reveal My Identity
               </button>
@@ -259,7 +263,7 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setRevealState('open')}
-            className="fixed inset-0 z-50 bg-[#0B0E14]/90 backdrop-blur-xl flex flex-col items-center justify-center cursor-pointer"
+            className="fixed inset-0 z-50 bg-[#0B0E14]/95 flex flex-col items-center justify-center cursor-pointer"
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0, y: 50 }}

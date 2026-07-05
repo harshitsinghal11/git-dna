@@ -35,7 +35,7 @@ export default function ScanningScreen() {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 1.1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="w-full max-w-md mx-auto p-12 bg-brand-surface/90 border-[2px] border-brand-border/50 rounded-2xl shadow-[0_20px_50px_rgba(11,14,20,0.8)] backdrop-blur-xl flex flex-col items-center text-center space-y-10 relative overflow-hidden"
+      className="w-full max-w-md mx-auto p-12 bg-brand-surface border border-brand-border/50 rounded-xl flex flex-col items-center text-center space-y-10 relative overflow-hidden"
     >
       {/* Background Radar Grid */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
@@ -46,7 +46,7 @@ export default function ScanningScreen() {
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="absolute inset-0 rounded-full border-[2px] border-brand-primary/20 shadow-[0_0_15px_rgba(56,189,248,0.1)]" 
+          className="absolute inset-0 rounded-full border border-brand-primary/20" 
         />
         <motion.div 
           animate={{ rotate: -360 }}
@@ -66,12 +66,12 @@ export default function ScanningScreen() {
         <motion.div 
           animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
           transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
-          className="relative w-4 h-4 rounded-full bg-brand-primary shadow-[0_0_20px_rgba(56,189,248,1)]" 
+          className="relative w-4 h-4 rounded-full bg-brand-primary shadow-[0_0_10px_rgba(56,189,248,0.5)]" 
         />
       </div>
 
       <div className="space-y-4 z-10 w-full">
-        <h3 className="text-xl font-black tracking-[0.2em] uppercase text-brand-primary shadow-brand-primary/50" style={{ textShadow: '0 0 10px rgba(56,189,248,0.3)' }}>Scanning</h3>
+        <h3 className="text-xl font-black tracking-[0.2em] uppercase text-brand-primary">Scanning</h3>
         
         <div className="h-6 flex items-center justify-center relative overflow-hidden">
           <AnimatePresence mode="wait">
