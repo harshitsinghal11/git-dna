@@ -36,7 +36,7 @@ export default function Home() {
 
       setData(result);
       setStatus('revealed');
-      
+
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {
@@ -66,13 +66,13 @@ export default function Home() {
           <span>←</span> New Scan
         </button>
       )}
-      
+
       <div className="z-10 w-full max-w-5xl flex flex-col items-center">
         {status === 'idle' || status === 'error' ? (
           <div className="w-full max-w-md space-y-8 text-center animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-brand-text-main">
-                Developer <span className="text-brand-primary">Identity</span>
+                Git <span className="text-brand-primary">DNA</span>
               </h1>
               <p className="text-brand-text-muted">
                 Enter a GitHub username to reveal their true developer class, stats, and journey.

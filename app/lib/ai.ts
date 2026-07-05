@@ -14,7 +14,8 @@ export async function generateClassDescription(developerClass: string, topLangua
     'The Open Source Celebrity': 'Your code echoes across the developer ecosystem.',
     'The Elite Engineer': 'You ship robust, high-quality code at an exceptional pace.',
     'The Generalist': 'You effortlessly adapt to any paradigm or language thrown your way.',
-    'The Rising Developer': 'You are rapidly forging your own unique path in code.'
+    'The Rising Developer': 'You are rapidly forging your own unique path in code.',
+    'The Ghost': 'Your code remains completely hidden in the shadows.'
   };
 
   const defaultFallback = fallbackMap[developerClass] || 'You forge your own unique path in code.';

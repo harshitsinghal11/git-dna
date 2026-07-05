@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { GitDNAData, Medal } from '../lib/engine';
+import { GitDNAData, Medal, GitHubRepo } from '../lib/engine';
 
 type Tab = 'Identity' | 'Medals' | 'Journey';
 
@@ -92,12 +92,16 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                       <p className="text-brand-primary font-mono uppercase tracking-widest text-sm mb-2">@{raw.profile.login}</p>
                       <div className="inline-flex items-center space-x-3 bg-brand-bg px-4 py-1.5 rounded-full border border-brand-border">
                         <div className="flex items-center gap-2">
-                          <img
-                            src={`/assets/levels/${identity.levelNumber}-${slugify(identity.level)}.png`}
-                            alt={identity.level}
-                            className="w-5 h-5 object-contain"
-                            onError={(e) => (e.currentTarget.style.display = 'none')}
-                          />
+                          <div className="w-5 h-5 relative">
+                            <Image
+                              src={`/assets/levels/${identity.levelNumber}-${slugify(identity.level)}.png`}
+                              alt={identity.level}
+                              fill
+                              sizes="20px"
+                              className="object-contain"
+                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => (e.currentTarget.style.display = 'none')}
+                            />
+                          </div>
                           <p className="text-sm font-black tracking-widest uppercase" style={{ color: levelColor }}>{identity.level}</p>
                         </div>
                         <span className="w-1 h-1 rounded-full bg-brand-text-muted" />
@@ -132,10 +136,10 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
 
                 <motion.div variants={itemVariants} className="p-6 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors text-center space-y-3 relative overflow-hidden group">
                   <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">{identity.archetype}</h3>
-                  <p className="text-brand-text-main/80 italic font-medium">"{identity.description}"</p>
+                  <p className="text-brand-text-main/80 italic font-medium">&quot;{identity.description}&quot;</p>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4">
+                <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors flex flex-col items-center justify-center text-center">
                     <p className="text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em] mb-2">DNA Sequence</p>
                     <p className="text-sm font-black text-brand-primary tracking-widest">{identity.developerDNA}</p>
@@ -167,7 +171,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: Medal) => m.unlocked).length} / 12 UNLOCKED</p>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {identity.medals.map((medal: Medal) => {
                     const isLocked = !medal.unlocked;
                     return (
@@ -231,7 +235,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                 </motion.div>
 
                 <div className="space-y-3 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-brand-border">
-                  {raw.topRepos.map((repo: any) => (
+                  {raw.topRepos.map((repo: GitHubRepo) => (
                     <motion.div variants={itemVariants} key={repo.name} className="relative pl-12 group cursor-default">
                       {/* Timeline dot */}
                       <div className="absolute left-[15px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />

@@ -13,6 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: "Git DNA - Developer Identity",
   description: "Reveal your true developer class and journey based on your GitHub activity.",
   openGraph: {
@@ -20,11 +21,20 @@ export const metadata: Metadata = {
     description: "Reveal your true developer class and journey based on your GitHub activity.",
     type: "website",
     siteName: "Git DNA",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Git DNA Preview Card",
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
     title: "Git DNA - Developer Identity",
     description: "Reveal your true developer class and journey based on your GitHub activity.",
+    images: ["/og-image.png"]
   }
 };
 

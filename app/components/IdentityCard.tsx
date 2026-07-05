@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toPng } from 'html-to-image';
 import OpenCardView from './OpenCardView';
 import Image from 'next/image';
 import { GitDNAData, Medal } from '../lib/engine';
@@ -25,6 +26,8 @@ const getLevelColor = (levelNumber: number) => {
 export default function IdentityCard({ data }: { data: GitDNAData | null }) {
   const [revealState, setRevealState] = useState<RevealState>('closed');
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (revealState === 'level' || revealState === 'medals') {
@@ -80,33 +83,70 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
     }
   };
 
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    setIsDownloading(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, { cacheBust: true, backgroundColor: '#0B0E14' });
+      const link = document.createElement('a');
+      link.download = `git-dna-${data?.raw?.profile?.login || 'card'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to download image', err);
+      alert('Failed to generate image.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (!data) return null;
 
   if (revealState === 'open' && data) {
     return (
       <>
-        {/* Share Button rendered fixed to the global viewport, decoupled from the transformed card */}
-        <button 
-          onClick={handleShare}
-          disabled={isGeneratingShare}
-          className="fixed top-4 right-4 md:top-12 md:right-12 z-50 flex items-center gap-2 p-3 rounded-xl bg-brand-surface border border-brand-border hover:bg-[#0A66C2]/20 hover:border-[#0A66C2]/50 transition-all group disabled:opacity-50 shadow-lg"
-          aria-label="Share on LinkedIn"
-        >
-          {isGeneratingShare ? (
-            <svg className="w-5 h-5 text-[#0A66C2] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <svg className="w-5 h-5 text-brand-text-muted group-hover:text-[#0A66C2] transition-colors" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-          )}
-          {/* Tooltip */}
-          <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-            {isGeneratingShare ? 'Generating...' : 'Share on LinkedIn'}
-          </div>
-        </button>
+        {/* Action Buttons */}
+        <div className="fixed top-4 right-4 md:top-12 md:right-12 z-50 flex items-center gap-3">
+          <button 
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="flex items-center gap-2 p-3 rounded-xl bg-brand-surface border border-brand-border hover:bg-brand-primary/20 hover:border-brand-primary/50 transition-all group disabled:opacity-50 shadow-lg relative"
+            aria-label="Download Image"
+          >
+            {isDownloading ? (
+              <svg className="w-5 h-5 text-brand-primary animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-brand-text-muted group-hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            )}
+            <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              {isDownloading ? 'Generating...' : 'Download Image'}
+            </div>
+          </button>
+
+          <button 
+            onClick={handleShare}
+            disabled={isGeneratingShare}
+            className="flex items-center gap-2 p-3 rounded-xl bg-brand-surface border border-brand-border hover:bg-[#0A66C2]/20 hover:border-[#0A66C2]/50 transition-all group disabled:opacity-50 shadow-lg relative"
+            aria-label="Share on LinkedIn"
+          >
+            {isGeneratingShare ? (
+              <svg className="w-5 h-5 text-[#0A66C2] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-brand-text-muted group-hover:text-[#0A66C2] transition-colors" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            )}
+            <div className="absolute top-14 right-0 w-max px-3 py-1.5 bg-[#0B0E14] border border-brand-border rounded-lg text-xs font-bold tracking-widest text-brand-text-main opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              {isGeneratingShare ? 'Generating...' : 'Share on LinkedIn'}
+            </div>
+          </button>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
@@ -114,14 +154,15 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full max-w-5xl h-auto min-h-[600px] perspective-[1000px] mb-12"
         >
-          <OpenCardView data={data} />
+          <div ref={cardRef} className="w-full h-full bg-[#0B0E14] rounded-2xl p-1">
+            <OpenCardView data={data} />
+          </div>
         </motion.div>
       </>
     );
   }
 
   const identity = data?.identity || null;
-  const earnedMedals = identity?.medals.filter((m: Medal) => m.unlocked) || [];
   const levelColor = identity ? getLevelColor(identity.levelNumber) : 'rgba(100, 116, 139, 0.5)';
 
   return (

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { analyzeIdentity, GitHubStats } from '../../lib/engine';
 import { generateClassDescription } from '../../lib/ai';
+import { kv } from '@vercel/kv';
 
 export async function POST(req: Request) {
   try {
@@ -8,6 +9,18 @@ export async function POST(req: Request) {
 
     if (!username) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 });
+    }
+
+    const cacheKey = `dna:${username.toLowerCase()}`;
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      try {
+        const cachedData = await kv.get(cacheKey);
+        if (cachedData) {
+          return NextResponse.json(cachedData);
+        }
+      } catch (err) {
+        console.warn('KV Cache Read Error:', err);
+      }
     }
 
     const headers: Record<string, string> = {
@@ -81,7 +94,7 @@ export async function POST(req: Request) {
     const description = await generateClassDescription(analysis.archetype, topLanguage);
 
     // 5. Return payload for the reveal sequence
-    return NextResponse.json({
+    const payload = {
       identity: {
         ...analysis,
         description,
@@ -95,7 +108,7 @@ export async function POST(req: Request) {
           createdAt: profileData.created_at,
         },
         stats,
-        topRepos: originalRepos.slice(0, 10).map(repo => ({
+        topRepos: originalRepos.slice(0, 10).map((repo: any) => ({
           name: repo.name,
           stargazers_count: repo.stargazers_count,
           language: repo.language,
@@ -104,7 +117,18 @@ export async function POST(req: Request) {
           pushed_at: repo.pushed_at,
         }))
       }
-    });
+    };
+
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      try {
+        // Cache for 24 hours (86400 seconds)
+        await kv.set(cacheKey, payload, { ex: 86400 });
+      } catch (err) {
+        console.warn('KV Cache Write Error:', err);
+      }
+    }
+
+    return NextResponse.json(payload);
 
   } catch (error) {
     console.error('API Analyze Route Error:', error);

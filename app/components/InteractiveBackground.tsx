@@ -17,7 +17,7 @@ export default function InteractiveBackground() {
     let particles: Particle[] = [];
     const spacing = 45; // distance between dots
 
-    let mouse = { x: -1000, y: -1000, radius: 120, baseRadius: 200, isShockwaveActive: false };
+    const mouse = { x: -1000, y: -1000, radius: 120, baseRadius: 200, isShockwaveActive: false };
     let shockwaveTimer: NodeJS.Timeout | null = null;
 
     class Particle {
@@ -52,14 +52,14 @@ export default function InteractiveBackground() {
       }
 
       update() {
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-        let forceDirectionX = dx / distance;
-        let forceDirectionY = dy / distance;
-        let maxDistance = mouse.radius;
-        let force = (maxDistance - distance) / maxDistance;
+        const forceDirectionX = dx / distance;
+        const forceDirectionY = dy / distance;
+        const maxDistance = mouse.radius;
+        const force = (maxDistance - distance) / maxDistance;
 
         // Push force from mouse
         if (distance < mouse.radius) {
@@ -69,8 +69,8 @@ export default function InteractiveBackground() {
         }
 
         // Spring force pulling back to base
-        let springForceX = (this.baseX - this.x) * 0.05; // Stiffness
-        let springForceY = (this.baseY - this.y) * 0.05;
+        const springForceX = (this.baseX - this.x) * 0.05; // Stiffness
+        const springForceY = (this.baseY - this.y) * 0.05;
 
         this.vx += springForceX;
         this.vy += springForceY;

@@ -91,8 +91,12 @@ export function calculateLevel(xp: number): { name: string, levelNumber: number 
   return { name: 'Initiate', levelNumber: 1 };
 }
 
-export function determineArchetype(medals: Medal[]): string {
+export function determineArchetype(medals: Medal[], stats?: GitHubStats): string {
   const unlockedCount = medals.filter(m => m.unlocked).length;
+
+  if (stats && stats.publicRepos === 0 && stats.totalStars === 0 && stats.followers === 0) {
+    return 'The Ghost';
+  }
 
   const has = (idSubstring: string) => medals.find(m => m.id.includes(idSubstring) && m.unlocked);
 
@@ -128,7 +132,7 @@ export function analyzeIdentity(stats: GitHubStats): AnalysisResult {
   });
 
   const { name: level, levelNumber } = calculateLevel(xp);
-  const archetype = determineArchetype(medals);
+  const archetype = determineArchetype(medals, stats);
 
   // Create a DNA sequence string (e.g. "FRNT-BEND-DATA")
   const dna = stats.primaryLanguages.slice(0, 3).map(l => l.substring(0, 4).toUpperCase()).join('-') || 'INIT-CODE';
