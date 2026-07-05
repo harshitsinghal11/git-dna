@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ScanningScreen from './components/ScanningScreen';
 import IdentityCard from './components/IdentityCard';
+import InteractiveBackground from './components/InteractiveBackground';
 
 export default function Home() {
   const [username, setUsername] = useState('');
@@ -44,8 +45,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-brand-bg flex flex-col items-center justify-center pt-24 pb-6 px-4 sm:p-24 relative overflow-x-hidden">
+      <InteractiveBackground />
       {/* Background glowing effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {status === 'revealed' && (
         <button
