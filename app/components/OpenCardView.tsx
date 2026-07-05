@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { GitDNAData, Medal, GitHubRepo } from '../lib/engine';
 
-type Tab = 'Identity' | 'Medals' | 'Journey';
+export type Tab = 'Identity' | 'Medals' | 'Journey';
 
 const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
@@ -32,16 +32,17 @@ const getLevelColor = (levelNumber: number) => {
   }
 };
 
-export default function OpenCardView({ data }: { data: GitDNAData }) {
-  const [activeTab, setActiveTab] = useState<Tab>('Identity');
+export default function OpenCardView({ data, forceTab }: { data: GitDNAData, forceTab?: Tab }) {
+  const [internalTab, setInternalTab] = useState<Tab>('Identity');
+  const activeTab = forceTab || internalTab;
 
   const { identity, raw } = data;
   const levelColor = getLevelColor(identity.levelNumber);
 
   return (
-    <div className="w-full h-full flex flex-col gap-4">
+    <div className={`w-full ${forceTab ? 'h-auto' : 'h-full'} flex flex-col gap-4`}>
       {/* Main Card Container */}
-      <div className="w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl overflow-hidden relative">
+      <div className={`w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl ${forceTab ? 'overflow-visible' : 'overflow-hidden'} relative`}>
 
         {/* Glow behind the HUD */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% -20%, ${levelColor}20 0%, transparent 70%)` }} />
@@ -51,7 +52,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
           {['Identity', 'Medals', 'Journey'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab as Tab)}
+              onClick={() => setInternalTab(tab as Tab)}
               className={`flex-1 py-5 text-xs font-black tracking-[0.2em] uppercase transition-all duration-300 relative ${activeTab === tab
                 ? 'text-brand-primary'
                 : 'text-brand-text-muted hover:text-brand-text-main hover:bg-white/5'
@@ -69,22 +70,22 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
         </div>
 
         {/* Tab Content */}
-        <div className="p-4 sm:p-8 flex-1 relative z-10 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div className={`p-4 sm:p-8 flex-1 relative z-10 ${forceTab ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'} custom-scrollbar`}>
           <AnimatePresence mode="wait">
 
             {/* IDENTITY TAB */}
             {activeTab === 'Identity' && (
               <motion.div
                 key="Identity"
-                variants={tabVariants}
+                variants={forceTab ? undefined : tabVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
                 className="space-y-8"
               >
-                <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6 w-full">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6 w-full">
                   <div className="relative w-24 h-24 flex-shrink-0">
-                    <Image src={raw.profile.avatarUrl} alt="Avatar" fill sizes="96px" className="rounded-full border-[3px] shadow-[0_0_20px_rgba(56,189,248,0.2)] object-cover" style={{ borderColor: levelColor }} />
+                    <Image src={raw.profile.avatarUrl} alt="Avatar" fill sizes="96px" className="rounded-full border-[3px] shadow-[0_0_20px_rgba(56,189,248,0.2)] object-cover" style={{ borderColor: levelColor }} unoptimized />
                   </div>
                   <div className="flex-1 flex flex-col sm:flex-row justify-between items-center sm:items-start w-full text-center sm:text-left gap-4 sm:gap-0">
                     <div className="flex flex-col items-center sm:items-start">
@@ -100,6 +101,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                               sizes="20px"
                               className="object-contain"
                               onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => (e.currentTarget.style.display = 'none')}
+                              unoptimized
                             />
                           </div>
                           <p className="text-sm font-black tracking-widest uppercase" style={{ color: levelColor }}>{identity.level}</p>
@@ -121,6 +123,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                               sizes="32px"
                               className="object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]"
                               onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => e.currentTarget.style.display = 'none'}
+                              unoptimized
                             />
                           </div>
                         ))}
@@ -134,12 +137,12 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="p-6 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors text-center space-y-3 relative overflow-hidden group">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="p-6 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors text-center space-y-3 relative overflow-hidden group">
                   <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">{identity.archetype}</h3>
                   <p className="text-brand-text-main/80 italic font-medium">&quot;{identity.description}&quot;</p>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors flex flex-col items-center justify-center text-center">
                     <p className="text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em] mb-2">DNA Sequence</p>
                     <p className="text-sm font-black text-brand-primary tracking-widest">{identity.developerDNA}</p>
@@ -160,7 +163,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
             {activeTab === 'Medals' && (
               <motion.div
                 key="Medals"
-                variants={tabVariants}
+                variants={forceTab ? undefined : tabVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
@@ -175,7 +178,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   {identity.medals.map((medal: Medal) => {
                     const isLocked = !medal.unlocked;
                     return (
-                      <motion.div variants={itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
+                      <motion.div variants={forceTab ? undefined : itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
                         <div className="flex items-center gap-5 mb-4">
                           <div className={`w-16 h-16 relative flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
                             {isLocked ? (
@@ -191,6 +194,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                                   e.currentTarget.style.display = 'none';
                                   e.currentTarget.parentElement!.innerHTML = '<span class="text-2xl font-black text-brand-primary">★</span>';
                                 }}
+                                unoptimized
                               />
                             )}
                           </div>
@@ -223,13 +227,13 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
             {activeTab === 'Journey' && (
               <motion.div
                 key="Journey"
-                variants={tabVariants}
+                variants={forceTab ? undefined : tabVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
                 className="space-y-6"
               >
-                <motion.div variants={itemVariants} className="flex justify-between items-end mb-2">
+                <motion.div variants={forceTab ? undefined : itemVariants} className="flex justify-between items-end mb-2">
                   <h3 className="text-[10px] font-bold text-brand-text-muted uppercase tracking-[0.2em]">The Constellation</h3>
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">TOP {raw.topRepos.length} REPOSITORIES</p>
                 </motion.div>
@@ -238,31 +242,32 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   {raw.topRepos.map((repo: GitHubRepo) => {
                     const repoDate = new Date(repo.created_at);
                     return (
-                    <motion.div variants={itemVariants} key={repo.name} className="relative pl-[75px] group cursor-default">
-                      {/* Vertical Date */}
-                      <div className="absolute left-0 top-[1.35rem] w-[35px] flex flex-col items-end text-[10px] font-mono leading-tight tracking-widest">
-                        <span className="text-brand-primary font-bold uppercase">{repoDate.toLocaleDateString(undefined, { month: 'short' })}</span>
-                        <span className="text-brand-text-muted">{repoDate.toLocaleDateString(undefined, { day: '2-digit' })}</span>
-                        <span className="text-brand-text-muted/50 mt-1">{repoDate.getFullYear()}</span>
-                      </div>
-
-                      {/* Timeline dot */}
-                      <div className="absolute left-[41px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
-
-                      <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border group-hover:border-brand-primary/50 transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-white text-lg">{repo.name}</h4>
-                          <span className="text-brand-accent text-xs font-mono font-bold flex items-center gap-1 bg-brand-accent/10 px-2 py-1 rounded-md">
-                            ★ {repo.stargazers_count}
-                          </span>
+                      <motion.div variants={forceTab ? undefined : itemVariants} key={repo.name} className="relative pl-[75px] group cursor-default">
+                        {/* Vertical Date */}
+                        <div className="absolute left-0 top-[1.35rem] w-[35px] flex flex-col items-end text-[10px] font-mono leading-tight tracking-widest">
+                          <span className="text-brand-primary font-bold uppercase">{repoDate.toLocaleDateString(undefined, { month: 'short' })}</span>
+                          <span className="text-brand-text-muted">{repoDate.toLocaleDateString(undefined, { day: '2-digit' })}</span>
+                          <span className="text-brand-text-muted/50 mt-1">{repoDate.getFullYear()}</span>
                         </div>
-                        {repo.description && <p className="text-sm text-brand-text-muted mb-3">{repo.description}</p>}
-                        <div className="flex items-center gap-4 text-xs font-mono text-brand-primary/80 uppercase tracking-wider">
-                          <span>{repo.language || 'SYS_UNKNOWN'}</span>
+
+                        {/* Timeline dot */}
+                        <div className="absolute left-[41px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
+
+                        <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border group-hover:border-brand-primary/50 transition-colors">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-white text-lg">{repo.name}</h4>
+                            <span className="text-brand-accent text-xs font-mono font-bold flex items-center gap-1 bg-brand-accent/10 px-2 py-1 rounded-md">
+                              ★ {repo.stargazers_count}
+                            </span>
+                          </div>
+                          {repo.description && <p className="text-sm text-brand-text-muted mb-3">{repo.description}</p>}
+                          <div className="flex items-center gap-4 text-xs font-mono text-brand-primary/80 uppercase tracking-wider">
+                            <span>{repo.language || 'SYS_UNKNOWN'}</span>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )})}
+                      </motion.div>
+                    )
+                  })}
                 </div>
               </motion.div>
             )}

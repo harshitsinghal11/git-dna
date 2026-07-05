@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toPng } from 'html-to-image';
-import OpenCardView from './OpenCardView';
+import OpenCardView, { Tab } from './OpenCardView';
 import Image from 'next/image';
 import { GitDNAData, Medal } from '../lib/engine';
 
@@ -27,6 +27,7 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
   const [revealState, setRevealState] = useState<RevealState>('closed');
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadTab, setDownloadTab] = useState<Tab | undefined>(undefined);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -87,15 +88,31 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
     if (!cardRef.current) return;
     setIsDownloading(true);
     try {
-      const dataUrl = await toPng(cardRef.current, { cacheBust: true, backgroundColor: '#0B0E14' });
-      const link = document.createElement('a');
-      link.download = `git-dna-${data?.raw?.profile?.login || 'card'}.png`;
-      link.href = dataUrl;
-      link.click();
+      // 1. Download Identity Card
+      setDownloadTab('Identity');
+      await new Promise(resolve => setTimeout(resolve, 600)); // Wait for render and animations
+      
+      const dataUrl1 = await toPng(cardRef.current, { cacheBust: true, backgroundColor: '#0B0E14' });
+      const link1 = document.createElement('a');
+      link1.download = `git-dna-${data?.raw?.profile?.login || 'card'}-identity.png`;
+      link1.href = dataUrl1;
+      link1.click();
+
+      // 2. Download Medals Card
+      setDownloadTab('Medals');
+      await new Promise(resolve => setTimeout(resolve, 600)); // Wait for transition
+      
+      const dataUrl2 = await toPng(cardRef.current, { cacheBust: true, backgroundColor: '#0B0E14' });
+      const link2 = document.createElement('a');
+      link2.download = `git-dna-${data?.raw?.profile?.login || 'card'}-medals.png`;
+      link2.href = dataUrl2;
+      link2.click();
+      
     } catch (err) {
-      console.error('Failed to download image', err);
-      alert('Failed to generate image.');
+      console.error('Failed to download images', err);
+      alert('Failed to generate images.');
     } finally {
+      setDownloadTab(undefined);
       setIsDownloading(false);
     }
   };
@@ -154,8 +171,8 @@ export default function IdentityCard({ data }: { data: GitDNAData | null }) {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="w-full max-w-5xl h-auto min-h-[600px] perspective-[1000px] mb-12"
         >
-          <div ref={cardRef} className="w-full h-full bg-[#0B0E14] rounded-2xl p-1">
-            <OpenCardView data={data} />
+          <div ref={cardRef} className={`w-full ${downloadTab ? 'h-auto' : 'h-full'} bg-[#0B0E14] rounded-2xl p-1`}>
+            <OpenCardView data={data} forceTab={downloadTab} />
           </div>
         </motion.div>
       </>
