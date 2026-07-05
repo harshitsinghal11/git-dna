@@ -108,19 +108,19 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                         <p className="text-xs text-brand-text-muted font-mono">{identity.xp.toLocaleString()} XP</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex sm:flex-col items-center sm:items-end justify-center gap-2 mt-2 sm:mt-1 border-t sm:border-t-0 border-brand-border/50 pt-4 sm:pt-0 w-full sm:w-auto">
                       <span className="hidden sm:block text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em]">Achievements</span>
                       <div className="flex items-center justify-center gap-2">
                         {identity.medals.filter((m: Medal) => m.unlocked).slice(0, 3).map((m: Medal) => (
                           <div key={m.id} title={m.name} className="w-8 h-8 opacity-90 hover:opacity-100 transition-opacity relative">
-                            <Image 
-                              src={`/assets/medals/${m.id}.png`} 
-                              alt={m.name} 
+                            <Image
+                              src={`/assets/medals/${m.id}.png`}
+                              alt={m.name}
                               fill
                               sizes="32px"
-                              className="object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]" 
-                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => e.currentTarget.style.display = 'none'} 
+                              className="object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]"
+                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => e.currentTarget.style.display = 'none'}
                             />
                           </div>
                         ))}
@@ -171,7 +171,7 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: Medal) => m.unlocked).length} / 12 UNLOCKED</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                   {identity.medals.map((medal: Medal) => {
                     const isLocked = !medal.unlocked;
                     return (
@@ -234,11 +234,20 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">TOP {raw.topRepos.length} REPOSITORIES</p>
                 </motion.div>
 
-                <div className="space-y-3 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-brand-border">
-                  {raw.topRepos.map((repo: GitHubRepo) => (
-                    <motion.div variants={itemVariants} key={repo.name} className="relative pl-12 group cursor-default">
+                <div className="space-y-4 relative before:absolute before:inset-y-0 before:left-[45px] before:w-[2px] before:bg-brand-border">
+                  {raw.topRepos.map((repo: GitHubRepo) => {
+                    const repoDate = new Date(repo.created_at);
+                    return (
+                    <motion.div variants={itemVariants} key={repo.name} className="relative pl-[75px] group cursor-default">
+                      {/* Vertical Date */}
+                      <div className="absolute left-0 top-[1.35rem] w-[35px] flex flex-col items-end text-[10px] font-mono leading-tight tracking-widest">
+                        <span className="text-brand-primary font-bold uppercase">{repoDate.toLocaleDateString(undefined, { month: 'short' })}</span>
+                        <span className="text-brand-text-muted">{repoDate.toLocaleDateString(undefined, { day: '2-digit' })}</span>
+                        <span className="text-brand-text-muted/50 mt-1">{repoDate.getFullYear()}</span>
+                      </div>
+
                       {/* Timeline dot */}
-                      <div className="absolute left-[15px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
+                      <div className="absolute left-[41px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
 
                       <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border group-hover:border-brand-primary/50 transition-colors">
                         <div className="flex justify-between items-start mb-2">
@@ -250,12 +259,10 @@ export default function OpenCardView({ data }: { data: GitDNAData }) {
                         {repo.description && <p className="text-sm text-brand-text-muted mb-3">{repo.description}</p>}
                         <div className="flex items-center gap-4 text-xs font-mono text-brand-primary/80 uppercase tracking-wider">
                           <span>{repo.language || 'SYS_UNKNOWN'}</span>
-                          <span>•</span>
-                          <span>{new Date(repo.created_at).getFullYear()}</span>
                         </div>
                       </div>
                     </motion.div>
-                  ))}
+                  )})}
                 </div>
               </motion.div>
             )}
