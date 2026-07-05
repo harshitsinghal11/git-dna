@@ -24,7 +24,7 @@ export default function ScanningScreen() {
         }
         return prev;
       });
-    }, 400); // Faster, snappy stages for Phase 4
+    }, 800); // Slower interval so users can read the stages
 
     return () => clearInterval(interval);
   }, []);

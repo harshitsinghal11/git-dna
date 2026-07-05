@@ -123,21 +123,21 @@ export default function InfoOverlay() {
                     Medals are special achievements unlocked by reaching specific milestones in your GitHub journey. Examples include:
                   </p>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-brand-text-muted text-sm">
-                    <li>• <strong className="text-white">Star Magnet:</strong> 50+ total stars</li>
-                    <li>• <strong className="text-white">Commit Machine:</strong> 15+ public repos</li>
-                    <li>• <strong className="text-white">Polygot:</strong> 5+ primary languages</li>
-                    <li>• <strong className="text-white">Ancient One:</strong> 3+ years active</li>
-                    <li>• <strong className="text-white">Ship It:</strong> 3+ recently updated repos</li>
-                    <li>• <strong className="text-white">Open Source Ally:</strong> 10+ forks of your repos</li>
-                    <li>• <strong className="text-white">Deep Diver:</strong> 10MB+ codebase size</li>
-                    <li>• <strong className="text-white">Hidden Gem:</strong> High star/follower ratio</li>
-                    <li>• <strong className="text-white">Maintainer:</strong> 25+ public repos</li>
-                    <li>• <strong className="text-white">Specialist:</strong> 80%+ focus in one language</li>
-                    <li>• <strong className="text-white">Explorer:</strong> Follows 20+ developers</li>
-                    <li>• <strong className="text-white">Comeback Coder:</strong> Active again after 2+ years</li>
+                    <li><strong className="text-white">Star Magnet:</strong> 50+ total stars</li>
+                    <li><strong className="text-white">Commit Machine:</strong> 15+ public repos</li>
+                    <li><strong className="text-white">Polygot:</strong> 5+ primary languages</li>
+                    <li><strong className="text-white">Ancient One:</strong> 3+ years active</li>
+                    <li><strong className="text-white">Ship It:</strong> 3+ recently updated repos</li>
+                    <li><strong className="text-white">Open Source Ally:</strong> 10+ forks of your repos</li>
+                    <li><strong className="text-white">Deep Diver:</strong> 10MB+ codebase size</li>
+                    <li><strong className="text-white">Hidden Gem:</strong> High star/follower ratio</li>
+                    <li><strong className="text-white">Maintainer:</strong> 25+ public repos</li>
+                    <li><strong className="text-white">Specialist:</strong> 80%+ focus in one language</li>
+                    <li><strong className="text-white">Explorer:</strong> Follows 20+ developers</li>
+                    <li><strong className="text-white">Comeback Coder:</strong> Active again after 2+ years</li>
                   </ul>
                 </section>
-                
+
                 <p className="text-center text-xs text-brand-text-muted/50 mt-8 pt-4 border-t border-brand-border/30">
                   Data is based on publicly available GitHub metrics.
                 </p>

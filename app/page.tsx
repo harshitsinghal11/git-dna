@@ -43,7 +43,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-brand-bg flex flex-col items-center justify-center p-6 sm:p-24 relative overflow-x-hidden">
+    <main className="min-h-screen bg-brand-bg flex flex-col items-center justify-center pt-24 pb-6 px-4 sm:p-24 relative overflow-x-hidden">
       {/* Background glowing effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
@@ -54,7 +54,7 @@ export default function Home() {
             setUsername('');
             setData(null);
           }}
-          className="absolute top-6 left-6 md:top-12 md:left-12 flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-xl text-brand-text-muted hover:text-white hover:border-brand-primary/50 hover:bg-brand-primary/10 transition-all z-50 text-xs font-bold uppercase tracking-wider"
+          className="fixed top-4 left-4 md:top-12 md:left-12 flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-xl text-brand-text-muted hover:text-white hover:border-brand-primary/50 hover:bg-brand-primary/10 transition-all z-50 text-xs font-bold uppercase tracking-wider shadow-lg"
         >
           <span>←</span> New Scan
         </button>

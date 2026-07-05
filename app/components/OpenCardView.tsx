@@ -33,65 +33,32 @@ const getLevelColor = (levelNumber: number) => {
 
 export default function OpenCardView({ data }: { data: any }) {
   const [activeTab, setActiveTab] = useState<Tab>('Identity');
-  
+
   const { identity, raw } = data;
   const levelColor = getLevelColor(identity.levelNumber);
-
-  const [isGeneratingShare, setIsGeneratingShare] = useState(false);
-
-  const handleShare = async () => {
-    setIsGeneratingShare(true);
-    try {
-      const res = await fetch('/api/share/linkedin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: raw.profile.name || raw.profile.login,
-          level: identity.level,
-          archetype: identity.archetype,
-          xp: identity.xp,
-          topLanguage: identity.topLanguage,
-          medals: identity.medals.filter((m: any) => m.unlocked).length
-        })
-      });
-      const shareData = await res.json();
-      if (shareData.text) {
-        const url = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(shareData.text)}`;
-        window.open(url, '_blank');
-      } else {
-        alert('Could not generate post.');
-      }
-    } catch (e) {
-      console.error(e);
-      alert('Failed to generate LinkedIn post.');
-    } finally {
-      setIsGeneratingShare(false);
-    }
-  };
 
   return (
     <div className="w-full h-full flex flex-col gap-4">
       {/* Main Card Container */}
       <div className="w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl overflow-hidden relative">
-        
+
         {/* Glow behind the HUD */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% -20%, ${levelColor}20 0%, transparent 70%)` }} />
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-brand-border/50 bg-[#0B0E14]/80 backdrop-blur-md relative z-10">
+        <div className="flex border-b border-brand-border/50 bg-[#0B0E14]/80 backdrop-blur-md relative z-10 items-center">
           {['Identity', 'Medals', 'Journey'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as Tab)}
-              className={`flex-1 py-5 text-xs font-black tracking-[0.2em] uppercase transition-all duration-300 relative ${
-                activeTab === tab 
-                  ? 'text-brand-primary' 
-                  : 'text-brand-text-muted hover:text-brand-text-main hover:bg-white/5'
-              }`}
+              className={`flex-1 py-5 text-xs font-black tracking-[0.2em] uppercase transition-all duration-300 relative ${activeTab === tab
+                ? 'text-brand-primary'
+                : 'text-brand-text-muted hover:text-brand-text-main hover:bg-white/5'
+                }`}
             >
               {tab}
               {activeTab === tab && (
-                <motion.div 
+                <motion.div
                   layoutId="activeTabIndicator"
                   className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary shadow-[0_0_15px_rgba(56,189,248,0.8)]"
                 />
@@ -101,12 +68,12 @@ export default function OpenCardView({ data }: { data: any }) {
         </div>
 
         {/* Tab Content */}
-        <div className="p-8 flex-1 relative z-10">
+        <div className="p-4 sm:p-8 flex-1 relative z-10 overflow-y-auto overflow-x-hidden custom-scrollbar">
           <AnimatePresence mode="wait">
-            
+
             {/* IDENTITY TAB */}
             {activeTab === 'Identity' && (
-              <motion.div 
+              <motion.div
                 key="Identity"
                 variants={tabVariants}
                 initial="initial"
@@ -114,41 +81,47 @@ export default function OpenCardView({ data }: { data: any }) {
                 exit="exit"
                 className="space-y-8"
               >
-                <motion.div variants={itemVariants} className="flex items-center space-x-6">
+                <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6 w-full">
                   <div className="relative w-24 h-24 flex-shrink-0">
                     <Image src={raw.profile.avatarUrl} alt="Avatar" fill sizes="96px" className="rounded-full border-[3px] shadow-[0_0_20px_rgba(56,189,248,0.2)] object-cover" style={{ borderColor: levelColor }} />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-4">
+                  <div className="flex-1 flex flex-col sm:flex-row justify-between items-center sm:items-start w-full text-center sm:text-left gap-4 sm:gap-0">
+                    <div className="flex flex-col items-center sm:items-start">
                       <h2 className="text-3xl font-black text-brand-text-main tracking-tight">{raw.profile.name || raw.profile.login}</h2>
-                      <div className="flex items-center gap-1">
+                      <p className="text-brand-primary font-mono uppercase tracking-widest text-sm mb-2">@{raw.profile.login}</p>
+                      <div className="inline-flex items-center space-x-3 bg-brand-bg px-4 py-1.5 rounded-full border border-brand-border">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={`/assets/levels/${identity.levelNumber}-${slugify(identity.level)}.png`}
+                            alt={identity.level}
+                            className="w-5 h-5 object-contain"
+                            onError={(e) => (e.currentTarget.style.display = 'none')}
+                          />
+                          <p className="text-sm font-black tracking-widest uppercase" style={{ color: levelColor }}>{identity.level}</p>
+                        </div>
+                        <span className="w-1 h-1 rounded-full bg-brand-text-muted" />
+                        <p className="text-xs text-brand-text-muted font-mono">{identity.xp.toLocaleString()} XP</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex sm:flex-col items-center sm:items-end justify-center gap-2 mt-2 sm:mt-1 border-t sm:border-t-0 border-brand-border/50 pt-4 sm:pt-0 w-full sm:w-auto">
+                      <span className="hidden sm:block text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em]">Achievements</span>
+                      <div className="flex items-center justify-center gap-2">
                         {identity.medals.filter((m: any) => m.unlocked).slice(0, 3).map((m: any) => (
-                          <div key={m.id} title={m.name} className="w-6 h-6">
-                            <img src={`/assets/medals/${m.id}.png`} alt={m.name} className="w-full h-full object-contain" onError={(e: any) => e.currentTarget.style.display = 'none'} />
+                          <div key={m.id} title={m.name} className="w-8 h-8 opacity-90 hover:opacity-100 transition-opacity">
+                            <img src={`/assets/medals/${m.id}.png`} alt={m.name} className="w-full h-full object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]" onError={(e: any) => e.currentTarget.style.display = 'none'} />
                           </div>
                         ))}
                         {identity.medals.filter((m: any) => m.unlocked).length > 3 && (
-                          <span className="text-[10px] text-brand-text-muted ml-1 font-bold">+{identity.medals.filter((m: any) => m.unlocked).length - 3}</span>
+                          <div className="w-8 h-8 rounded-full bg-brand-bg/50 border border-brand-border flex items-center justify-center">
+                            <span className="text-xs text-brand-primary font-bold">+{identity.medals.filter((m: any) => m.unlocked).length - 3}</span>
+                          </div>
                         )}
                       </div>
                     </div>
-                    <p className="text-brand-primary font-mono uppercase tracking-widest text-sm mb-2">@{raw.profile.login}</p>
-                    <div className="inline-flex items-center space-x-3 bg-brand-bg px-4 py-1.5 rounded-full border border-brand-border">
-                      <div className="flex items-center gap-2">
-                        <img 
-                          src={`/assets/levels/${identity.levelNumber}-${slugify(identity.level)}.png`}
-                          alt={identity.level}
-                          className="w-5 h-5 object-contain"
-                          onError={(e) => (e.currentTarget.style.display = 'none')}
-                        />
-                        <p className="text-sm font-black tracking-widest uppercase" style={{ color: levelColor }}>{identity.level}</p>
-                      </div>
-                      <span className="w-1 h-1 rounded-full bg-brand-text-muted" />
-                      <p className="text-xs text-brand-text-muted font-mono">{identity.xp.toLocaleString()} XP</p>
-                    </div>
                   </div>
                 </motion.div>
-                
+
                 <motion.div variants={itemVariants} className="p-6 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border hover:border-brand-primary/30 transition-colors text-center space-y-3 relative overflow-hidden group">
                   <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">{identity.archetype}</h3>
                   <p className="text-brand-text-main/80 italic font-medium">"{identity.description}"</p>
@@ -173,7 +146,7 @@ export default function OpenCardView({ data }: { data: any }) {
 
             {/* MEDALS TAB */}
             {activeTab === 'Medals' && (
-              <motion.div 
+              <motion.div
                 key="Medals"
                 variants={tabVariants}
                 initial="initial"
@@ -185,7 +158,7 @@ export default function OpenCardView({ data }: { data: any }) {
                   <h3 className="text-[10px] font-bold text-brand-text-muted uppercase tracking-[0.2em]">All Achievements</h3>
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: any) => m.unlocked).length} / 12 UNLOCKED</p>
                 </motion.div>
-                
+
                 {/* Increased gap and grid adjustments to reduce congestion */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                   {identity.medals.map((medal: any) => {
@@ -195,9 +168,9 @@ export default function OpenCardView({ data }: { data: any }) {
                         <div className="flex items-center gap-5 mb-4">
                           <div className={`w-16 h-16 flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
                             {isLocked ? (
-                               <span className="text-xl">🔒</span>
+                              <span className="text-xl">🔒</span>
                             ) : (
-                               <img 
+                              <img
                                 src={`/assets/medals/${medal.id}.png`}
                                 alt={medal.name}
                                 className="w-full h-full object-cover"
@@ -235,7 +208,7 @@ export default function OpenCardView({ data }: { data: any }) {
 
             {/* JOURNEY TAB */}
             {activeTab === 'Journey' && (
-              <motion.div 
+              <motion.div
                 key="Journey"
                 variants={tabVariants}
                 initial="initial"
@@ -243,17 +216,17 @@ export default function OpenCardView({ data }: { data: any }) {
                 exit="exit"
                 className="space-y-6"
               >
-                 <motion.div variants={itemVariants} className="flex justify-between items-end mb-2">
+                <motion.div variants={itemVariants} className="flex justify-between items-end mb-2">
                   <h3 className="text-[10px] font-bold text-brand-text-muted uppercase tracking-[0.2em]">The Constellation</h3>
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">TOP {raw.topRepos.length} REPOSITORIES</p>
                 </motion.div>
-                
+
                 <div className="space-y-3 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-brand-border">
                   {raw.topRepos.map((repo: any) => (
                     <motion.div variants={itemVariants} key={repo.name} className="relative pl-12 group cursor-default">
                       {/* Timeline dot */}
                       <div className="absolute left-[15px] top-6 w-[10px] h-[10px] rounded-full bg-brand-border group-hover:bg-brand-primary group-hover:shadow-[0_0_10px_rgba(56,189,248,0.8)] transition-all z-10" />
-                      
+
                       <div className="p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border border-brand-border group-hover:border-brand-primary/50 transition-colors">
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-white text-lg">{repo.name}</h4>
@@ -278,25 +251,6 @@ export default function OpenCardView({ data }: { data: any }) {
         </div>
       </div>
 
-      {/* Final Actions */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        className="w-full flex justify-center gap-4"
-      >
-        <button 
-          onClick={handleShare}
-          disabled={isGeneratingShare}
-          className="px-8 py-4 w-full md:w-auto bg-brand-primary text-[#0B0E14] font-black uppercase tracking-widest text-sm rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
-        >
-          {isGeneratingShare ? (
-             <span className="animate-pulse">Generating Post...</span>
-          ) : (
-            <>Share Identity</>
-          )}
-        </button>
-      </motion.div>
     </div>
   );
 }
