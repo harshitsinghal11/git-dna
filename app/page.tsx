@@ -4,12 +4,13 @@ import { useState } from 'react';
 import ScanningScreen from './components/ScanningScreen';
 import IdentityCard from './components/IdentityCard';
 import InteractiveBackground from './components/InteractiveBackground';
+import { GitDNAData } from './lib/engine';
 
 export default function Home() {
   const [username, setUsername] = useState('');
   const [status, setStatus] = useState<'idle' | 'scanning' | 'revealed' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<GitDNAData | null>(null);
 
   const handleReveal = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +37,13 @@ export default function Home() {
       setData(result);
       setStatus('revealed');
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message);
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else {
+        setErrorMsg('An unknown error occurred.');
+      }
       setStatus('error');
     }
   };
@@ -87,8 +92,16 @@ export default function Home() {
               </div>
 
               {status === 'error' && (
-                <div className="p-4 bg-brand-error/10 border border-brand-error/30 rounded-lg text-brand-error text-sm">
-                  {errorMsg}
+                <div className="flex items-center gap-3 p-4 bg-[#ff3333]/10 border border-[#ff3333]/30 rounded-xl text-[#ff3333] text-sm font-medium shadow-[0_0_15px_rgba(255,51,51,0.15)] animate-fade-in text-left">
+                  <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#ff3333]/20">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-wider text-[10px] opacity-80 mb-0.5">Scan Failed</p>
+                    <p>{errorMsg}</p>
+                  </div>
                 </div>
               )}
 

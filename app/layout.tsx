@@ -13,8 +13,19 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Developer Identity",
-  description: "Reveal your true developer class and journey.",
+  title: "Git DNA - Developer Identity",
+  description: "Reveal your true developer class and journey based on your GitHub activity.",
+  openGraph: {
+    title: "Git DNA - Developer Identity",
+    description: "Reveal your true developer class and journey based on your GitHub activity.",
+    type: "website",
+    siteName: "Git DNA",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Git DNA - Developer Identity",
+    description: "Reveal your true developer class and journey based on your GitHub activity.",
+  }
 };
 
 import InfoOverlay from "./components/InfoOverlay";

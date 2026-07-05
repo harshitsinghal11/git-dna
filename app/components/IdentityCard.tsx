@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OpenCardView from './OpenCardView';
 import Image from 'next/image';
+import { GitDNAData, Medal } from '../lib/engine';
 
 type RevealState = 'closed' | 'analyzing' | 'level' | 'medals' | 'open';
 
@@ -21,7 +22,7 @@ const getLevelColor = (levelNumber: number) => {
   }
 };
 
-export default function IdentityCard({ data }: { data: any }) {
+export default function IdentityCard({ data }: { data: GitDNAData | null }) {
   const [revealState, setRevealState] = useState<RevealState>('closed');
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
 
@@ -47,8 +48,8 @@ export default function IdentityCard({ data }: { data: any }) {
   const handleShare = async () => {
     setIsGeneratingShare(true);
     try {
-      const identity = data.identity;
-      const raw = data.raw;
+      const identity = data!.identity;
+      const raw = data!.raw;
       const res = await fetch('/api/share/linkedin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,7 +59,7 @@ export default function IdentityCard({ data }: { data: any }) {
           archetype: identity.archetype,
           xp: identity.xp,
           topLanguage: identity.topLanguage,
-          medals: identity.medals.filter((m: any) => m.unlocked).length,
+          medals: identity.medals.filter((m: Medal) => m.unlocked).length,
           accountAgeDays: raw.stats?.accountAgeDays,
           publicRepos: raw.stats?.publicRepos,
           totalStars: raw.stats?.totalStars
@@ -120,7 +121,7 @@ export default function IdentityCard({ data }: { data: any }) {
   }
 
   const identity = data?.identity || null;
-  const earnedMedals = identity?.medals.filter((m: any) => m.unlocked) || [];
+  const earnedMedals = identity?.medals.filter((m: Medal) => m.unlocked) || [];
   const levelColor = identity ? getLevelColor(identity.levelNumber) : 'rgba(100, 116, 139, 0.5)';
 
   return (
@@ -221,7 +222,7 @@ export default function IdentityCard({ data }: { data: any }) {
                   src={`/assets/levels/${identity.levelNumber}-${slugify(identity.level)}.png`}
                   alt={identity.level}
                   className="w-full h-full object-contain relative z-10"
-                  onError={(e: any) => (e.currentTarget.style.display = 'none')}
+                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => (e.currentTarget.style.display = 'none')}
                 />
               </motion.div>
               <h1 className="text-6xl md:text-8xl font-black uppercase tracking-[0.2em] mb-4 text-center" style={{ color: levelColor, textShadow: `0 0 30px ${levelColor}` }}>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { GitDNAData, Medal } from '../lib/engine';
 
 type Tab = 'Identity' | 'Medals' | 'Journey';
 
@@ -31,7 +32,7 @@ const getLevelColor = (levelNumber: number) => {
   }
 };
 
-export default function OpenCardView({ data }: { data: any }) {
+export default function OpenCardView({ data }: { data: GitDNAData }) {
   const [activeTab, setActiveTab] = useState<Tab>('Identity');
 
   const { identity, raw } = data;
@@ -107,14 +108,21 @@ export default function OpenCardView({ data }: { data: any }) {
                     <div className="flex sm:flex-col items-center sm:items-end justify-center gap-2 mt-2 sm:mt-1 border-t sm:border-t-0 border-brand-border/50 pt-4 sm:pt-0 w-full sm:w-auto">
                       <span className="hidden sm:block text-[10px] text-brand-text-muted font-bold uppercase tracking-[0.2em]">Achievements</span>
                       <div className="flex items-center justify-center gap-2">
-                        {identity.medals.filter((m: any) => m.unlocked).slice(0, 3).map((m: any) => (
-                          <div key={m.id} title={m.name} className="w-8 h-8 opacity-90 hover:opacity-100 transition-opacity">
-                            <img src={`/assets/medals/${m.id}.png`} alt={m.name} className="w-full h-full object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]" onError={(e: any) => e.currentTarget.style.display = 'none'} />
+                        {identity.medals.filter((m: Medal) => m.unlocked).slice(0, 3).map((m: Medal) => (
+                          <div key={m.id} title={m.name} className="w-8 h-8 opacity-90 hover:opacity-100 transition-opacity relative">
+                            <Image 
+                              src={`/assets/medals/${m.id}.png`} 
+                              alt={m.name} 
+                              fill
+                              sizes="32px"
+                              className="object-contain drop-shadow-[0_0_5px_rgba(56,189,248,0.3)]" 
+                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => e.currentTarget.style.display = 'none'} 
+                            />
                           </div>
                         ))}
-                        {identity.medals.filter((m: any) => m.unlocked).length > 3 && (
+                        {identity.medals.filter((m: Medal) => m.unlocked).length > 3 && (
                           <div className="w-8 h-8 rounded-full bg-brand-bg/50 border border-brand-border flex items-center justify-center">
-                            <span className="text-xs text-brand-primary font-bold">+{identity.medals.filter((m: any) => m.unlocked).length - 3}</span>
+                            <span className="text-xs text-brand-primary font-bold">+{identity.medals.filter((m: Medal) => m.unlocked).length - 3}</span>
                           </div>
                         )}
                       </div>
@@ -154,27 +162,28 @@ export default function OpenCardView({ data }: { data: any }) {
                 exit="exit"
                 className="space-y-6"
               >
-                <motion.div variants={itemVariants} className="flex justify-between items-end mb-4">
-                  <h3 className="text-[10px] font-bold text-brand-text-muted uppercase tracking-[0.2em]">All Achievements</h3>
-                  <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: any) => m.unlocked).length} / 12 UNLOCKED</p>
-                </motion.div>
+                <div className="col-span-full mb-2">
+                  <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">Medals Earned</h3>
+                  <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: Medal) => m.unlocked).length} / 12 UNLOCKED</p>
+                </div>
 
-                {/* Increased gap and grid adjustments to reduce congestion */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {identity.medals.map((medal: any) => {
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {identity.medals.map((medal: Medal) => {
                     const isLocked = !medal.unlocked;
                     return (
                       <motion.div variants={itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
                         <div className="flex items-center gap-5 mb-4">
-                          <div className={`w-16 h-16 flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
+                          <div className={`w-16 h-16 relative flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
                             {isLocked ? (
                               <span className="text-xl">🔒</span>
                             ) : (
-                              <img
+                              <Image
                                 src={`/assets/medals/${medal.id}.png`}
                                 alt={medal.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
+                                fill
+                                sizes="64px"
+                                className="object-cover"
+                                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                                   e.currentTarget.style.display = 'none';
                                   e.currentTarget.parentElement!.innerHTML = '<span class="text-2xl font-black text-brand-primary">★</span>';
                                 }}

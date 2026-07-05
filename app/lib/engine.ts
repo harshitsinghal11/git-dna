@@ -30,6 +30,31 @@ export interface AnalysisResult {
   developerDNA: string;
 }
 
+export interface GitHubProfile {
+  name: string;
+  login: string;
+  avatarUrl: string;
+  createdAt: string;
+}
+
+export interface GitHubRepo {
+  name: string;
+  description: string;
+  stargazers_count: number;
+  language: string;
+  created_at: string;
+  pushed_at: string;
+}
+
+export interface GitDNAData {
+  identity: AnalysisResult & { topLanguage: string; description: string };
+  raw: {
+    profile: GitHubProfile;
+    stats: GitHubStats;
+    topRepos: GitHubRepo[];
+  };
+}
+
 export function detectMedals(stats: GitHubStats): Medal[] {
   const configs = [
     { id: '1-star-magnet', name: 'Star Magnet', desc: 'Earned for receiving 50+ stars on repositories.', val: stats.totalStars, req: 50 },
