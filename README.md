@@ -20,9 +20,6 @@ Git DNA is a highly interactive web platform that analyzes a developer's GitHub 
 - Google Gemini API (`@google/genai`)
 - Upstash Redis / Vercel KV
 
-## Screenshots (Optional)
-![Git DNA Preview](/public/og-image.png)
-
 ## Project Structure
 ```text
 app/
