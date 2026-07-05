@@ -108,7 +108,7 @@ export async function POST(req: Request) {
           createdAt: profileData.created_at,
         },
         stats,
-        topRepos: originalRepos.slice(0, 10).map((repo: any) => ({
+        topRepos: originalRepos.slice(0, 10).map((repo: { name: string; stargazers_count: number; language: string; description: string; created_at: string; pushed_at: string }) => ({
           name: repo.name,
           stargazers_count: repo.stargazers_count,
           language: repo.language,

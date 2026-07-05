@@ -37,7 +37,7 @@ export default function InfoOverlay() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#0B0E14]/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-[#0B0E14]/95 flex items-center justify-center p-4 sm:p-6"
             onClick={() => setIsOpen(false)}
           >
             <motion.div
@@ -45,7 +45,7 @@ export default function InfoOverlay() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-brand-surface border border-brand-border rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative"
+              className="bg-brand-surface border border-brand-border/50 rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6 md:p-8 relative"
             >
               <button
                 onClick={() => setIsOpen(false)}
@@ -85,32 +85,32 @@ export default function InfoOverlay() {
 
                 <section>
                   <h3 className="text-xl font-bold text-white mb-4 border-b border-brand-border pb-2">Level Tiers</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-brand-text-muted text-sm">
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-brand-text-muted text-sm mt-4">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Initiate</span>
                       0+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Explorer</span>
                       1,000+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Builder</span>
                       2,500+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Craftsman</span>
                       5,000+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Architect</span>
                       10,000+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30">
+                    <div className="flex flex-col">
                       <span className="text-white font-bold block mb-1">Vanguard</span>
                       25,000+ XP
                     </div>
-                    <div className="bg-brand-bg/50 p-3 rounded-lg border border-brand-border/30 sm:col-span-2">
+                    <div className="flex flex-col sm:col-span-2">
                       <span className="text-[#B9F2FF] font-bold block mb-1">Mythic</span>
                       100,000+ XP
                     </div>
