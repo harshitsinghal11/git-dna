@@ -18,25 +18,22 @@ export default function Home() {
     setErrorMsg('');
 
     try {
-      // Step 1: Only fetch the basic profile to prevent network tab spoilers
-      const res = await fetch('/api/scan', {
+      const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+      const resPromise = fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim() }),
       });
 
+      const [res] = await Promise.all([resPromise, minDelay]);
       const result = await res.json();
 
       if (!res.ok) {
         throw new Error(result.error || 'Failed to fetch developer data');
       }
 
-      // Add the username explicitly so IdentityCard can use it for the analysis step
-      setData({ ...result, _username: username.trim() });
-      
-      setTimeout(() => {
-        setStatus('revealed');
-      }, 2000);
+      setData(result);
+      setStatus('revealed');
       
     } catch (err: any) {
       console.error(err);
@@ -46,9 +43,22 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-brand-bg flex flex-col items-center justify-center p-6 sm:p-24 relative overflow-hidden">
+    <main className="min-h-screen bg-brand-bg flex flex-col items-center justify-center p-6 sm:p-24 relative overflow-x-hidden">
       {/* Background glowing effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-primary/10 rounded-full blur-[100px] pointer-events-none" />
+
+      {status === 'revealed' && (
+        <button
+          onClick={() => {
+            setStatus('idle');
+            setUsername('');
+            setData(null);
+          }}
+          className="absolute top-6 left-6 md:top-12 md:left-12 flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-xl text-brand-text-muted hover:text-white hover:border-brand-primary/50 hover:bg-brand-primary/10 transition-all z-50 text-xs font-bold uppercase tracking-wider"
+        >
+          <span>←</span> New Scan
+        </button>
+      )}
       
       <div className="z-10 w-full max-w-5xl flex flex-col items-center">
         {status === 'idle' || status === 'error' ? (
@@ -91,18 +101,8 @@ export default function Home() {
         ) : status === 'scanning' ? (
           <ScanningScreen />
         ) : (
-          <div className="w-full flex flex-col items-center space-y-8 animate-fade-in">
+          <div className="w-full flex flex-col items-center animate-fade-in">
             <IdentityCard data={data} />
-            <button
-              onClick={() => {
-                setStatus('idle');
-                setUsername('');
-                setData(null);
-              }}
-              className="text-brand-text-muted hover:text-brand-text-main underline decoration-brand-border underline-offset-4 transition-colors"
-            >
-              Scan Another Developer
-            </button>
           </div>
         )}
       </div>

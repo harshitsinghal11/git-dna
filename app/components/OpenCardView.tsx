@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 type Tab = 'Identity' | 'Medals' | 'Journey';
 
@@ -36,10 +37,42 @@ export default function OpenCardView({ data }: { data: any }) {
   const { identity, raw } = data;
   const levelColor = getLevelColor(identity.levelNumber);
 
+  const [isGeneratingShare, setIsGeneratingShare] = useState(false);
+
+  const handleShare = async () => {
+    setIsGeneratingShare(true);
+    try {
+      const res = await fetch('/api/share/linkedin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: raw.profile.name || raw.profile.login,
+          level: identity.level,
+          archetype: identity.archetype,
+          xp: identity.xp,
+          topLanguage: identity.topLanguage,
+          medals: identity.medals.filter((m: any) => m.unlocked).length
+        })
+      });
+      const shareData = await res.json();
+      if (shareData.text) {
+        const url = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(shareData.text)}`;
+        window.open(url, '_blank');
+      } else {
+        alert('Could not generate post.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Failed to generate LinkedIn post.');
+    } finally {
+      setIsGeneratingShare(false);
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col gap-4">
       {/* Main Card Container */}
-      <div className="w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl shadow-[0_20px_50px_rgba(11,14,20,0.8)] overflow-hidden relative">
+      <div className="w-full flex-1 flex flex-col bg-brand-surface/90 backdrop-blur-2xl border-[2px] border-brand-border/50 rounded-2xl overflow-hidden relative">
         
         {/* Glow behind the HUD */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% -20%, ${levelColor}20 0%, transparent 70%)` }} />
@@ -68,7 +101,7 @@ export default function OpenCardView({ data }: { data: any }) {
         </div>
 
         {/* Tab Content */}
-        <div className="p-8 flex-1 overflow-y-auto relative z-10 custom-scrollbar">
+        <div className="p-8 flex-1 relative z-10">
           <AnimatePresence mode="wait">
             
             {/* IDENTITY TAB */}
@@ -82,9 +115,23 @@ export default function OpenCardView({ data }: { data: any }) {
                 className="space-y-8"
               >
                 <motion.div variants={itemVariants} className="flex items-center space-x-6">
-                  <img src={raw.profile.avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full border-[3px] shadow-[0_0_20px_rgba(56,189,248,0.2)] object-cover" style={{ borderColor: levelColor }} />
+                  <div className="relative w-24 h-24 flex-shrink-0">
+                    <Image src={raw.profile.avatarUrl} alt="Avatar" fill sizes="96px" className="rounded-full border-[3px] shadow-[0_0_20px_rgba(56,189,248,0.2)] object-cover" style={{ borderColor: levelColor }} />
+                  </div>
                   <div>
-                    <h2 className="text-3xl font-black text-brand-text-main tracking-tight">{raw.profile.name || raw.profile.login}</h2>
+                    <div className="flex items-center gap-4">
+                      <h2 className="text-3xl font-black text-brand-text-main tracking-tight">{raw.profile.name || raw.profile.login}</h2>
+                      <div className="flex items-center gap-1">
+                        {identity.medals.filter((m: any) => m.unlocked).slice(0, 3).map((m: any) => (
+                          <div key={m.id} title={m.name} className="w-6 h-6">
+                            <img src={`/assets/medals/${m.id}.png`} alt={m.name} className="w-full h-full object-contain" onError={(e: any) => e.currentTarget.style.display = 'none'} />
+                          </div>
+                        ))}
+                        {identity.medals.filter((m: any) => m.unlocked).length > 3 && (
+                          <span className="text-[10px] text-brand-text-muted ml-1 font-bold">+{identity.medals.filter((m: any) => m.unlocked).length - 3}</span>
+                        )}
+                      </div>
+                    </div>
                     <p className="text-brand-primary font-mono uppercase tracking-widest text-sm mb-2">@{raw.profile.login}</p>
                     <div className="inline-flex items-center space-x-3 bg-brand-bg px-4 py-1.5 rounded-full border border-brand-border">
                       <div className="flex items-center gap-2">
@@ -139,13 +186,14 @@ export default function OpenCardView({ data }: { data: any }) {
                   <p className="text-[10px] text-brand-primary font-mono tracking-widest">{identity.medals.filter((m: any) => m.unlocked).length} / 12 UNLOCKED</p>
                 </motion.div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Increased gap and grid adjustments to reduce congestion */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                   {identity.medals.map((medal: any) => {
                     const isLocked = !medal.unlocked;
                     return (
-                      <motion.div variants={itemVariants} key={medal.id} className={`flex flex-col p-4 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30'}`}>
-                        <div className="flex items-center gap-4 mb-3">
-                          <div className={`w-14 h-14 flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
+                      <motion.div variants={itemVariants} key={medal.id} className={`flex flex-col p-5 bg-brand-bg/50 backdrop-blur-sm rounded-xl border transition-colors relative overflow-hidden ${isLocked ? 'border-brand-border/30 grayscale opacity-75' : 'border-white/10 hover:border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
+                        <div className="flex items-center gap-5 mb-4">
+                          <div className={`w-16 h-16 flex-shrink-0 rounded-full border-[2px] bg-brand-bg overflow-hidden flex items-center justify-center shadow-lg ${isLocked ? 'border-brand-border/50' : 'border-brand-primary/30'}`}>
                             {isLocked ? (
                                <span className="text-xl">🔒</span>
                             ) : (
@@ -160,15 +208,15 @@ export default function OpenCardView({ data }: { data: any }) {
                               />
                             )}
                           </div>
-                          <div>
-                            <p className={`font-black text-sm uppercase tracking-wide ${isLocked ? 'text-brand-text-muted' : 'text-white'}`}>{medal.name}</p>
+                          <div className="flex-1">
+                            <p className={`font-black text-sm uppercase tracking-wide leading-tight mb-1 ${isLocked ? 'text-brand-text-muted' : 'text-white'}`}>{medal.name}</p>
                             <p className={`text-[10px] font-bold uppercase tracking-wider ${isLocked ? 'text-brand-text-muted/50' : 'text-brand-primary'}`}>{isLocked ? 'Locked' : 'Unlocked'}</p>
                           </div>
                         </div>
-                        <p className="text-xs text-brand-text-muted mt-auto">
+                        <p className="text-xs text-brand-text-muted leading-relaxed mt-auto">
                           {medal.description}
                         </p>
-                        <div className="mt-3 w-full bg-[#0B0E14] h-1.5 rounded-full overflow-hidden flex relative">
+                        <div className="mt-4 w-full bg-[#0B0E14] h-1.5 rounded-full overflow-hidden flex relative">
                           {isLocked && medal.requirement ? (
                             <>
                               <div className="h-full bg-brand-border" style={{ width: `${Math.min(100, (medal.progress / medal.requirement) * 100)}%` }} />
@@ -237,20 +285,16 @@ export default function OpenCardView({ data }: { data: any }) {
         transition={{ delay: 1, duration: 0.5 }}
         className="w-full flex justify-center gap-4"
       >
-        <button className="px-6 py-3 bg-brand-primary text-[#0B0E14] font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-105 transition-transform">
-          Share Result
-        </button>
-        <button className="px-6 py-3 bg-brand-surface border border-brand-border text-white font-bold uppercase tracking-widest text-xs rounded-xl hover:border-brand-primary/50 transition-colors">
-          Download Card
-        </button>
-        <button className="px-6 py-3 bg-brand-surface border border-brand-border text-white font-bold uppercase tracking-widest text-xs rounded-xl hover:border-brand-primary/50 transition-colors">
-          Copy Link
-        </button>
         <button 
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-transparent text-brand-text-muted hover:text-white font-bold uppercase tracking-widest text-xs rounded-xl transition-colors"
+          onClick={handleShare}
+          disabled={isGeneratingShare}
+          className="px-8 py-4 w-full md:w-auto bg-brand-primary text-[#0B0E14] font-black uppercase tracking-widest text-sm rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
-          Replay Reveal
+          {isGeneratingShare ? (
+             <span className="animate-pulse">Generating Post...</span>
+          ) : (
+            <>Share Identity</>
+          )}
         </button>
       </motion.div>
     </div>

@@ -21,11 +21,24 @@ export async function POST(req: Request) {
 
     // 1. Fetch User Profile
     const profileRes = await fetch(`https://api.github.com/users/${username}`, { headers });
+    
+    if (profileRes.status === 403 || profileRes.status === 429) {
+      return NextResponse.json({ error: 'GitHub API rate limit exceeded. Please try again later.' }, { status: 429 });
+    }
+    if (profileRes.status === 404) {
+      return NextResponse.json({ error: 'GitHub user not found.' }, { status: 404 });
+    }
     if (!profileRes.ok) throw new Error('Failed to fetch profile');
+    
     const profileData = await profileRes.json();
 
     // 2. Fetch Repositories
     const reposRes = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=pushed`, { headers });
+    
+    if (reposRes.status === 403 || reposRes.status === 429) {
+      return NextResponse.json({ error: 'GitHub API rate limit exceeded while fetching repositories.' }, { status: 429 });
+    }
+    
     const reposData = await reposRes.ok ? await reposRes.json() : [];
     const originalRepos = Array.isArray(reposData) ? reposData.filter(repo => !repo.fork) : [];
 

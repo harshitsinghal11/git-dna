@@ -8,13 +8,13 @@ if (process.env.GEMINI_API_KEY) {
 
 export async function generateClassDescription(developerClass: string, topLanguage: string): Promise<string> {
   const fallbackMap: Record<string, string> = {
-    'The Systems Architect': 'You build foundations that stand the test of time.',
-    'The Fearless Explorer': 'You learn new paradigms faster than they are invented.',
-    'The Deep Specialist': 'You have mastered your craft to the absolute core.',
-    'The Relentless Builder': 'You don\'t collect repositories. You keep returning until they become something real.',
-    'The Project Finisher': 'You take ideas and carry them faithfully across the finish line.',
-    'The Silent Maintainer': 'You keep the ecosystem alive when everyone else has gone to sleep.',
-    'The Experimental Hacker': 'You push boundaries just to see what breaks.'
+    'The Seasoned Architect': 'You build foundations that stand the test of time.',
+    'The Infinite Hacker': 'You push boundaries just to see what breaks.',
+    'The Deep Systems Master': 'You have mastered your craft to the absolute core.',
+    'The Open Source Celebrity': 'Your code echoes across the developer ecosystem.',
+    'The Elite Engineer': 'You ship robust, high-quality code at an exceptional pace.',
+    'The Generalist': 'You effortlessly adapt to any paradigm or language thrown your way.',
+    'The Rising Developer': 'You are rapidly forging your own unique path in code.'
   };
 
   const defaultFallback = fallbackMap[developerClass] || 'You forge your own unique path in code.';

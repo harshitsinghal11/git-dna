@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Reveal your true developer class and journey.",
 };
 
+import InfoOverlay from "./components/InfoOverlay";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.variable} ${jetbrainsMono.variable} antialiased`}>
         {children}
+        <InfoOverlay />
       </body>
     </html>
   );
